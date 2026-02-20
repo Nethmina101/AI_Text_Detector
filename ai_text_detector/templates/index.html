@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Hybrid AI Text Detector</title>
+</head>
+<body>
+  <h2>Hybrid AI Text Detector (PDF / DOCX / TXT) OR Paste Text</h2>
+
+  <form action="/analyze" method="post" enctype="multipart/form-data">
+    <h3>Option 1: Upload File</h3>
+    <input type="file" name="file" accept=".pdf,.docx,.txt" />
+    <p style="font-size: 12px; color: #555;">(Optional if you paste text below)</p>
+
+    <hr>
+
+    <h3>Option 2: Paste Text</h3>
+    <textarea name="text_input" rows="12" cols="100"
+      placeholder="Paste your text here (optional if you upload a file)"></textarea>
+
+    <br><br>
+    <label>Paragraph threshold (0.0 - 1.0):</label>
+    <input type="number" name="threshold" min="0" max="1" step="0.05" value="0.5">
+
+    <br><br>
+    <button type="submit">Analyze</button>
+  </form>
+
+  <hr>
+  <p><b>Training:</b> Put your dataset at <code>data/AI_Human.csv</code> and run <code>python -m src.train</code>.</p>
+</body>
+</html>

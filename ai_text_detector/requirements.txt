@@ -1,0 +1,12 @@
+flask
+scikit-learn
+xgboost
+numpy
+scipy
+joblib
+pypdf
+python-docx
+nltk
+transformers
+torch
+pdfplumber
