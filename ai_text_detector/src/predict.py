@@ -17,7 +17,7 @@ def _sigmoid(x: float) -> float:
 
 class HybridDetector:
     def __init__(self):
-        # TF-IDF + SVM (separate models; no hstack)
+        # TF-IDF + SVM 
         self.word_vec = joblib.load(os.path.join(MODELS_DIR, "tfidf_word.pkl"))
         self.char_vec = joblib.load(os.path.join(MODELS_DIR, "tfidf_char.pkl"))
         self.svm_word = joblib.load(os.path.join(MODELS_DIR, "svm_word.pkl"))
@@ -31,7 +31,7 @@ class HybridDetector:
         ppl_cfg = joblib.load(os.path.join(MODELS_DIR, "ppl_config.pkl"))
         self.ppl = PerplexityScorer(model_name=ppl_cfg.get("model_name", "gpt2"))
 
-        # Ensemble weights (tune after validation)
+        # Ensemble weights tune after validation
         self.wA = 0.45
         self.wB = 0.45
         self.wP = 0.10

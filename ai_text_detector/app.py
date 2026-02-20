@@ -37,13 +37,13 @@ def analyze():
         threshold = 0.5
     threshold = max(0.0, min(1.0, threshold))
 
-    # 1) Check pasted text first
+    # checking pasted text first
     pasted_text = (request.form.get("text_input") or "").strip()
     if pasted_text:
         text = pasted_text
 
     else:
-        # 2) Otherwise, check file upload
+        # if not check file upload
         f = request.files.get("file")
 
         if f is None or f.filename == "":

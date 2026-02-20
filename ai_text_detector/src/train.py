@@ -19,10 +19,8 @@ MODELS_DIR = "models"
 def train(train_csv: str = "data/AI_Human.csv"):
     os.makedirs(MODELS_DIR, exist_ok=True)
 
-    # ---- Load data ----
+    # Load data
     df = pd.read_csv(train_csv)
-
-    # NOTE: your column name has a trailing space: "generated "
     df = df.dropna(subset=["text", "generated "])
     texts = df["text"].astype(str).tolist()
     y = df["generated "].astype(int).to_numpy()
@@ -31,18 +29,6 @@ def train(train_csv: str = "data/AI_Human.csv"):
         texts, y, test_size=0.2, random_state=42, stratify=y
     )
 
-    # =========================
-    # Model A: TF-IDF + SVM (NO HSTACK)
-    # Train 2 separate models:
-    #   A1) word TF-IDF + SVM
-    #   A2) char TF-IDF + SVM
-    # Final TF-IDF score = average(A1, A2)
-    # =========================
-
-    # Reduce memory a bit for large datasets:
-    # - dtype float32
-    # - smaller max_features
-    # - min_df/max_df to drop rare/common terms
     word_vec = TfidfVectorizer(
         analyzer="word",
         ngram_range=(1, 2),
@@ -87,9 +73,7 @@ def train(train_csv: str = "data/AI_Human.csv"):
     joblib.dump(svm_word, os.path.join(MODELS_DIR, "svm_word.pkl"))
     joblib.dump(svm_char, os.path.join(MODELS_DIR, "svm_char.pkl"))
 
-    # =========================
-    # Model B: Stylometry + XGBoost
-    # =========================
+    # Stylometry + XGBoost
     Xtr_sty, keys = featurize_many(X_train)
     Xte_sty, _ = featurize_many(X_test)
 
