@@ -9,8 +9,10 @@ _WORD = re.compile(r"[A-Za-z0-9']+")
 
 PUNCTS = [",", ";", ":", "—", "-", "(", ")", "\"", "'"]
 
+
 def _safe_div(a: float, b: float) -> float:
     return a / b if b != 0 else 0.0
+
 
 def stylometry_features(text: str) -> Dict[str, float]:
     t = (text or "").strip()
@@ -24,7 +26,8 @@ def stylometry_features(text: str) -> Dict[str, float]:
     unique_words = len(set(w.lower() for w in words)) if words else 0
 
     tokens = [w.lower() for w in words]
-    trigrams = list(zip(tokens, tokens[1:], tokens[2:])) if len(tokens) >= 3 else []
+    trigrams = list(zip(tokens, tokens[1:], tokens[2:])) if len(
+        tokens) >= 3 else []
     uniq_tri = len(set(trigrams)) if trigrams else 0
 
     feats: Dict[str, float] = {
@@ -34,8 +37,10 @@ def stylometry_features(text: str) -> Dict[str, float]:
         "avg_sent_len": float(np.mean(sent_lens)),
         "std_sent_len": float(np.std(sent_lens)),
         "lexical_richness": _safe_div(unique_words, n_words),
-        "avg_word_len": float(np.mean([len(w) for w in words])) if words else 0.0,
-        "trigram_uniqueness": _safe_div(uniq_tri, len(trigrams) if trigrams else 0.0),
+        "avg_word_len": float(
+            np.mean([len(w) for w in words])) if words else 0.0,
+        "trigram_uniqueness": _safe_div(
+            uniq_tri, len(trigrams) if trigrams else 0.0),
     }
 
     for p in PUNCTS:
@@ -49,8 +54,10 @@ def stylometry_features(text: str) -> Dict[str, float]:
 
     return feats
 
+
 def featurize_many(texts: List[str]) -> Tuple[np.ndarray, List[str]]:
     rows = [stylometry_features(t) for t in texts]
     keys = sorted(rows[0].keys()) if rows else []
-    X = np.array([[r.get(k, 0.0) for k in keys] for r in rows], dtype=np.float32)
+    X = np.array([[r.get(k, 0.0) for k in keys]
+                 for r in rows], dtype=np.float32)
     return X, keys

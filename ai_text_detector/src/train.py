@@ -16,6 +16,7 @@ from .features_stylometry import featurize_many
 
 MODELS_DIR = "models"
 
+
 def train(train_csv: str = "data/AI_Human.csv"):
     os.makedirs(MODELS_DIR, exist_ok=True)
 
@@ -97,10 +98,12 @@ def train(train_csv: str = "data/AI_Human.csv"):
     joblib.dump(keys, os.path.join(MODELS_DIR, "stylometry_keys.pkl"))
 
     # Perplexity config (scorer loads GPT-2 if available; else heuristic)
-    joblib.dump({"model_name": "gpt2"}, os.path.join(MODELS_DIR, "ppl_config.pkl"))
+    joblib.dump({"model_name": "gpt2"}, os.path.join(
+        MODELS_DIR, "ppl_config.pkl"))
 
     print("\nSaved models to /models")
     print("Done.")
+
 
 if __name__ == "__main__":
     train()

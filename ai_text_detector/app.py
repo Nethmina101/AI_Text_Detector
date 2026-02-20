@@ -16,13 +16,16 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 _detector: HybridDetector | None = None
 
+
 def allowed_file(filename: str) -> bool:
     _, ext = os.path.splitext(filename.lower())
     return ext in ALLOWED_EXTS
 
+
 @app.route("/", methods=["GET"])
 def index():
     return render_template("index.html")
+
 
 @app.route("/analyze", methods=["POST"])
 def analyze():
@@ -50,7 +53,8 @@ def analyze():
             return "Please upload a file OR paste text.", 400
 
         if not allowed_file(f.filename):
-            return f"Unsupported file type. Allowed: {', '.join(sorted(ALLOWED_EXTS))}", 400
+            allowed = ', '.join(sorted(ALLOWED_EXTS))
+            return f"Unsupported file type. Allowed: {allowed}", 400
 
         filename = secure_filename(f.filename)
         path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
@@ -70,6 +74,7 @@ def analyze():
         doc=doc,
         threshold=threshold
     )
+
 
 if __name__ == "__main__":
     app.run(debug=True)

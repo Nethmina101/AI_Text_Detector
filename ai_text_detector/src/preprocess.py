@@ -4,6 +4,7 @@ from typing import List
 
 _HYPHEN_BREAK = re.compile(r"(\w)-\n(\w)")
 
+
 def split_paragraphs(text: str, min_chars: int = 40) -> List[str]:
     """
     Keep formatting as close as possible:

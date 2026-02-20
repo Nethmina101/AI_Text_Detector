@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import math
 
+
 def _heuristic_ppl(text: str) -> float:
     """Cheap fallback. NOT real perplexity, but provides a weak signal."""
     if not text:
@@ -12,6 +13,7 @@ def _heuristic_ppl(text: str) -> float:
     unique = len(set(w.lower() for w in words))
     ttr = unique / len(words)
     return 200.0 - 180.0 * min(max(ttr, 0.0), 1.0)
+
 
 class PerplexityScorer:
     """Uses GPT-2 if transformers/torch are available; otherwise heuristic."""

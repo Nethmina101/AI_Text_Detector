@@ -17,7 +17,7 @@ def _sigmoid(x: float) -> float:
 
 class HybridDetector:
     def __init__(self):
-        # TF-IDF + SVM 
+        # TF-IDF + SVM
         self.word_vec = joblib.load(os.path.join(MODELS_DIR, "tfidf_word.pkl"))
         self.char_vec = joblib.load(os.path.join(MODELS_DIR, "tfidf_char.pkl"))
         self.svm_word = joblib.load(os.path.join(MODELS_DIR, "svm_word.pkl"))
@@ -25,16 +25,18 @@ class HybridDetector:
 
         # Stylometry + XGB
         self.xgb = joblib.load(os.path.join(MODELS_DIR, "stylometry_xgb.pkl"))
-        self.keys = joblib.load(os.path.join(MODELS_DIR, "stylometry_keys.pkl"))
+        self.keys = joblib.load(os.path.join(
+            MODELS_DIR, "stylometry_keys.pkl"))
 
         # Perplexity scorer
         ppl_cfg = joblib.load(os.path.join(MODELS_DIR, "ppl_config.pkl"))
-        self.ppl = PerplexityScorer(model_name=ppl_cfg.get("model_name", "gpt2"))
+        self.ppl = PerplexityScorer(
+            model_name=ppl_cfg.get("model_name", "gpt2"))
 
         # Ensemble weights tune after validation
-        self.wA = 0.45
-        self.wB = 0.45
-        self.wP = 0.10
+        self.wA = 0.20
+        self.wB = 0.20
+        self.wP = 0.60
 
     def _stylometry_vec(self, text: str) -> np.ndarray:
         d = stylometry_features(text)
@@ -43,7 +45,9 @@ class HybridDetector:
     def _ppl_to_ai_prob(self, ppl: float) -> float:
         """Lower perplexity => more AI-like (typical assumption)."""
         ppl = float(max(1.0, min(ppl, 1000.0)))
-        z = (60.0 - ppl) / 20.0
+        # Adjusted midpoint from 60 to 45 to reduce false positive AI scores
+        # for human text that happens to have lower perplexity.
+        z = (45.0 - ppl) / 15.0
         return float(_sigmoid(z))
 
     def _svm_prob(self, paragraphs: List[str]) -> np.ndarray:
@@ -76,7 +80,8 @@ class HybridDetector:
             ppl = float(self.ppl.perplexity(p))
             probP = self._ppl_to_ai_prob(ppl)
 
-            ensemble = self.wA * float(probA[i]) + self.wB * probB + self.wP * probP
+            ensemble = self.wA * \
+                float(probA[i]) + self.wB * probB + self.wP * probP
 
             results.append({
                 "paragraph": p,
@@ -89,12 +94,24 @@ class HybridDetector:
 
         return results
 
-    def aggregate_document(self, para_results: List[Dict], threshold: float = 0.5) -> Dict:
+    def aggregate_document(
+        self, para_results: List[Dict], threshold: float = 0.5
+    ) -> Dict:
+        # A threshold of 1.0 is technically impossible due to probability bounds.
+        # Clip to 0.99 so users still see flags on extremely confident AI text.
+        effective_threshold = min(threshold, 0.99)
+
         probs = [r["prob_ensemble"] for r in para_results]
         if not probs:
-            return {"ai_percent": 0.0, "mean_prob": 0.0, "max_prob": 0.0, "n_paragraphs": 0, "n_flagged": 0}
+            return {
+                "ai_percent": 0.0,
+                "mean_prob": 0.0,
+                "max_prob": 0.0,
+                "n_paragraphs": 0,
+                "n_flagged": 0
+            }
 
-        flagged = sum(1 for p in probs if p >= threshold)
+        flagged = sum(1 for p in probs if p >= effective_threshold)
         return {
             "ai_percent": 100.0 * flagged / len(probs),
             "mean_prob": float(np.mean(probs)),

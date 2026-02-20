@@ -1,32 +1,108 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
+
 <head>
-  <meta charset="utf-8">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Hybrid AI Text Detector</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
+
 <body>
-  <h2>Hybrid AI Text Detector (PDF / DOCX / TXT) OR Paste Text</h2>
+  <div class="background-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+  </div>
 
-  <form action="/analyze" method="post" enctype="multipart/form-data">
-    <h3>Option 1: Upload File</h3>
-    <input type="file" name="file" accept=".pdf,.docx,.txt" />
-    <p style="font-size: 12px; color: #555;">(Optional if you paste text below)</p>
+  <div class="glass-container main-card">
+    <header class="header">
+      <div class="logo-icon">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+        </svg>
+      </div>
+      <h1>AI Text Detector</h1>
+      <p class="subtitle">Analyze text to determine if it was written by an AI or a Human</p>
+    </header>
 
-    <hr>
+    <form action="/analyze" method="post" enctype="multipart/form-data" class="upload-form" id="analyzeForm">
+      <div class="tabs">
+        <button type="button" class="tab active" onclick="switchTab('text')" id="btn-tab-text">Paste Text</button>
+        <button type="button" class="tab" onclick="switchTab('file')" id="btn-tab-file">Upload File</button>
+      </div>
 
-    <h3>Option 2: Paste Text</h3>
-    <textarea name="text_input" rows="12" cols="100"
-      placeholder="Paste your text here (optional if you upload a file)"></textarea>
+      <div id="tab-text" class="tab-content active">
+        <div class="input-group">
+          <textarea name="text_input" rows="8"
+            placeholder="Paste your essay, article, or text here to analyze..."></textarea>
+        </div>
+      </div>
 
-    <br><br>
-    <label>Paragraph threshold (0.0 - 1.0):</label>
-    <input type="number" name="threshold" min="0" max="1" step="0.05" value="0.5">
+      <div id="tab-file" class="tab-content">
+        <div class="file-upload-wrapper">
+          <div class="file-upload-border">
+            <svg class="upload-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+            </svg>
+            <p>Drag & drop a file or <span>browse</span></p>
+            <span class="file-hint">Supports .pdf, .docx, .txt</span>
+            <input type="file" name="file" accept=".pdf,.docx,.txt" class="file-input" id="fileInput"
+              onchange="updateFileName(this)" />
+          </div>
+          <p id="fileNameDisplay" class="file-name-display"></p>
+        </div>
+      </div>
 
-    <br><br>
-    <button type="submit">Analyze</button>
-  </form>
+      <div class="settings-group">
+        <label for="threshold">Detection Sensitivity <span class="tooltip"
+            title="Lower values flag more text as AI. 0.5 is recommended.">ⓘ</span></label>
+        <div class="slider-container">
+          <input type="range" name="threshold" id="threshold" min="0" max="1" step="0.05" value="0.5"
+            oninput="document.getElementById('threshold-val').textContent = this.value">
+          <span class="threshold-val" id="threshold-val">0.5</span>
+        </div>
+      </div>
 
-  <hr>
-  <p><b>Training:</b> Put your dataset at <code>data/AI_Human.csv</code> and run <code>python -m src.train</code>.</p>
+      <button type="submit" class="submit-btn" id="submitBtn">
+        <span class="btn-text">Analyze Content</span>
+        <svg class="loader" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="3"></circle>
+        </svg>
+      </button>
+    </form>
+
+    <div class="footer">
+      <p>Ensure your dataset exists at <code>data/AI_Human.csv</code> to train custom models.</p>
+    </div>
+  </div>
+
+  <script>
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+      document.getElementById('btn-tab-' + tabId).classList.add('active');
+      document.getElementById('tab-' + tabId).classList.add('active');
+    }
+
+    function updateFileName(input) {
+      const display = document.getElementById('fileNameDisplay');
+      if (input.files && input.files.length > 0) {
+        display.textContent = "Selected: " + input.files[0].name;
+        display.style.opacity = 1;
+      } else {
+        display.textContent = "";
+        display.style.opacity = 0;
+      }
+    }
+
+    document.getElementById('analyzeForm').addEventListener('submit', function () {
+      const btn = document.getElementById('submitBtn');
+      btn.classList.add('loading');
+      document.querySelector('.btn-text').textContent = "Analyzing...";
+    });
+  </script>
 </body>
+
 </html>

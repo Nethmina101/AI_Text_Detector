@@ -39,7 +39,7 @@ def extract_text(file_path: str) -> Tuple[str, str]:
 
     if ext == ".pdf":
         return _extract_pdf_text_pdfplumber(str(p)), ext
-        
+
     d = docx.Document(str(p))
     paras = [para.text for para in d.paragraphs]
     return "\n\n".join(paras), ext
