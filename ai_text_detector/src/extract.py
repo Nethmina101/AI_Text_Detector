@@ -38,7 +38,18 @@ def extract_text(file_path: str) -> Tuple[str, str]:
         return p.read_text(encoding="utf-8", errors="ignore"), ext
 
     if ext == ".pdf":
-        return _extract_pdf_text_pdfplumber(str(p)), ext
+        text = _extract_pdf_text_pdfplumber(str(p))
+        if len(text.strip()) < 50:
+            print("PDF lacks text, assuming scanned doc. Init OCR Pipeline...")
+            import os
+            from src.ocr import extract_ocr_from_pdf
+            root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            poppler_bin = os.path.join(root_dir, "poppler", "Library", "bin")
+            # Fallback to Poppler root if Library/bin doesn't exist depending on the zip
+            if not os.path.exists(poppler_bin):
+                poppler_bin = os.path.join(root_dir, "poppler", "bin")
+            text = extract_ocr_from_pdf(str(p), poppler_path=poppler_bin)
+        return text, ext
 
     d = docx.Document(str(p))
     paras = [para.text for para in d.paragraphs]

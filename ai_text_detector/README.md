@@ -8,6 +8,14 @@ This project detects AI-generated text in uploaded documents (PDF/DOCX/TXT) usin
 - Paragraph-level classification + document aggregation
 - Highlighting in UI
 
+## Prerequisites
+
+This project requires **Poppler** for PDF OCR processing. 
+
+* **Windows**: Download the latest Poppler binary from [Release page], extract it, and place the `poppler` folder in the root of this project.
+* **Mac**: Run `brew install poppler`
+* **Linux (Ubuntu/Debian)**: Run `sudo apt-get install poppler-utils`
+
 ## Setup
 
 ```bash

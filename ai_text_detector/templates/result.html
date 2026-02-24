@@ -265,7 +265,7 @@
         <div class="para-badge">{{ 'AI Detected' if is_ai else 'Human Written' }}</div>
 
         {% if is_ai %}
-        <p><mark>{{ r.paragraph }}</mark></p>
+        <p style="white-space: pre-wrap;"><mark>{{ r.paragraph }}</mark></p>
         {% else %}
         <p style="white-space: pre-wrap;">{{ r.paragraph }}</p>
         {% endif %}

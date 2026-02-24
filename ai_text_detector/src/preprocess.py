@@ -17,9 +17,9 @@ def split_paragraphs(text: str, min_chars: int = 40) -> List[str]:
     text = text.replace("\r\n", "\n").replace("\r", "\n")
     text = _HYPHEN_BREAK.sub(r"\1\2", text)
 
-    blocks = [b.strip() for b in text.split("\n\n")]
+    blocks = text.split("\n\n")
 
     # keep non-empty blocks
-    blocks = [b for b in blocks if len(b) >= min_chars]
+    blocks = [b for b in blocks if len(b.strip()) >= min_chars]
 
     return blocks

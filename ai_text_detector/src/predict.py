@@ -34,9 +34,9 @@ class HybridDetector:
             model_name=ppl_cfg.get("model_name", "gpt2"))
 
         # Ensemble weights tune after validation
-        self.wA = 0.20
-        self.wB = 0.20
-        self.wP = 0.60
+        self.wA = 0.10
+        self.wB = 0.10
+        self.wP = 0.80
 
     def _stylometry_vec(self, text: str) -> np.ndarray:
         d = stylometry_features(text)
@@ -45,9 +45,7 @@ class HybridDetector:
     def _ppl_to_ai_prob(self, ppl: float) -> float:
         """Lower perplexity => more AI-like (typical assumption)."""
         ppl = float(max(1.0, min(ppl, 1000.0)))
-        # Adjusted midpoint from 60 to 45 to reduce false positive AI scores
-        # for human text that happens to have lower perplexity.
-        z = (45.0 - ppl) / 15.0
+        z = (60.0 - ppl) / 15.0
         return float(_sigmoid(z))
 
     def _svm_prob(self, paragraphs: List[str]) -> np.ndarray:
