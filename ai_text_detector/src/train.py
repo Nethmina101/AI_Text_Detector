@@ -17,7 +17,7 @@ from .features_stylometry import featurize_many
 MODELS_DIR = "models"
 
 
-def train(train_csv: str = "data/AI_Human.csv"):
+def train(train_csv: str = "data/AI_Human_Cleaned.csv"):
     os.makedirs(MODELS_DIR, exist_ok=True)
 
     # Load data
