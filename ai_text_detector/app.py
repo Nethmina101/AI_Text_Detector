@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import os
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, flash, redirect, url_for
 from werkzeug.utils import secure_filename
 
 from src.extract import extract_text, ALLOWED_EXTS
@@ -12,6 +12,7 @@ UPLOAD_DIR = "uploads"
 
 app = Flask(__name__)
 app.config["UPLOAD_FOLDER"] = UPLOAD_DIR
+app.secret_key = "super_secret_key_for_flash_messages"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 _detector: HybridDetector | None = None
@@ -33,12 +34,8 @@ def analyze():
     if _detector is None:
         _detector = HybridDetector()
 
-    # Read threshold
-    try:
-        threshold = float(request.form.get("threshold", "0.5"))
-    except ValueError:
-        threshold = 0.5
-    threshold = max(0.0, min(1.0, threshold))
+    # Default threshold
+    threshold = 0.9
 
     # checking pasted text first
     pasted_text = (request.form.get("text_input") or "").strip()
@@ -50,11 +47,13 @@ def analyze():
         f = request.files.get("file")
 
         if f is None or f.filename == "":
-            return "Please upload a file OR paste text.", 400
+            flash("Please upload a file OR paste text.", "error")
+            return redirect(url_for("index"))
 
         if not allowed_file(f.filename):
             allowed = ', '.join(sorted(ALLOWED_EXTS))
-            return f"Unsupported file type. Allowed: {allowed}", 400
+            flash(f"Unsupported file type. Allowed: {allowed}", "error")
+            return redirect(url_for("index"))
 
         filename = secure_filename(f.filename)
         path = os.path.join(app.config["UPLOAD_FOLDER"], filename)

@@ -35,7 +35,7 @@ def train(train_csv: str = "data/AI_Human_Cleaned.csv"):
         ngram_range=(1, 2),
         min_df=3,
         max_df=0.95,
-        max_features=120_000,
+        max_features=50_000,
         dtype=np.float32
     )
     char_vec = TfidfVectorizer(
@@ -43,7 +43,7 @@ def train(train_csv: str = "data/AI_Human_Cleaned.csv"):
         ngram_range=(3, 5),
         min_df=3,
         max_df=0.95,
-        max_features=80_000,
+        max_features=30_000,
         dtype=np.float32
     )
 
@@ -53,8 +53,8 @@ def train(train_csv: str = "data/AI_Human_Cleaned.csv"):
     Xtr_char = char_vec.fit_transform(X_train)
     Xte_char = char_vec.transform(X_test)
 
-    svm_word = CalibratedClassifierCV(LinearSVC(), method="sigmoid", cv=3)
-    svm_char = CalibratedClassifierCV(LinearSVC(), method="sigmoid", cv=3)
+    svm_word = CalibratedClassifierCV(LinearSVC(C=0.1, max_iter=2000, random_state=42), method="sigmoid", cv=3)
+    svm_char = CalibratedClassifierCV(LinearSVC(C=0.1, max_iter=2000, random_state=42), method="sigmoid", cv=3)
 
     svm_word.fit(Xtr_word, y_train)
     svm_char.fit(Xtr_char, y_train)

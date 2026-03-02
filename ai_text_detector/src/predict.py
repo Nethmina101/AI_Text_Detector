@@ -93,7 +93,7 @@ class HybridDetector:
         return results
 
     def aggregate_document(
-        self, para_results: List[Dict], threshold: float = 0.5
+        self, para_results: List[Dict], threshold: float = 0.9
     ) -> Dict:
         # A threshold of 1.0 is technically impossible due to probability bounds.
         # Clip to 0.99 so users still see flags on extremely confident AI text.

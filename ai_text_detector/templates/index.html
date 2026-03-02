@@ -6,27 +6,50 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Hybrid AI Text Detector</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
-  <div class="background-orbs">
-    <div class="orb orb-1"></div>
-    <div class="orb orb-2"></div>
-  </div>
+  <div class="ambient-light"></div>
 
   <div class="glass-container main-card">
     <header class="header">
       <div class="logo-icon">
-        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round"
+          stroke-linejoin="round">
+          <path
+            d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z">
+          </path>
+          <polyline points="7.5 4.21 12 6.81 16.5 4.21"></polyline>
+          <polyline points="7.5 19.79 7.5 14.6 3 12"></polyline>
+          <polyline points="21 12 16.5 14.6 16.5 19.79"></polyline>
+          <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+          <line x1="12" y1="22.08" x2="12" y2="12"></line>
         </svg>
       </div>
-      <h1>AI Text Detector</h1>
-      <p class="subtitle">Analyze text to determine if it was written by an AI or a Human</p>
+      <h1>AI Document Analyzer </h1>
+      <p class="subtitle">Analyze your text to determine if it was written by an AI or a Human</p>
     </header>
 
     <form action="/analyze" method="post" enctype="multipart/form-data" class="upload-form" id="analyzeForm">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+      <div class="toast-container">
+        {% for category, message in messages %}
+        <div class="toast toast-{{ category }}">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round"
+            stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+          <span>{{ message }}</span>
+          <button type="button" class="toast-close" onclick="this.parentElement.remove()">&times;</button>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+      {% endwith %}
+
       <div class="tabs">
         <button type="button" class="tab active" onclick="switchTab('text')" id="btn-tab-text">Paste Text</button>
         <button type="button" class="tab" onclick="switchTab('file')" id="btn-tab-file">Upload File</button>
@@ -34,47 +57,38 @@
 
       <div id="tab-text" class="tab-content active">
         <div class="input-group">
-          <textarea name="text_input" rows="8"
-            placeholder="Paste your essay, article, or text here to analyze..."></textarea>
+          <textarea name="text_input" placeholder="Paste your essay, article, or text here to analyze..."></textarea>
         </div>
       </div>
 
       <div id="tab-file" class="tab-content">
         <div class="file-upload-wrapper">
-          <div class="file-upload-border">
-            <svg class="upload-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+          <label class="file-upload-border">
+            <svg class="upload-icon" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
             </svg>
-            <p>Drag & drop a file or <span>browse</span></p>
+            <p>Drag & drop a file or <span class="browse">browse</span></p>
             <span class="file-hint">Supports .pdf, .docx, .txt</span>
             <input type="file" name="file" accept=".pdf,.docx,.txt" class="file-input" id="fileInput"
               onchange="updateFileName(this)" />
+          </label>
+          <div style="text-align: center;">
+            <p id="fileNameDisplay" class="file-name-display" style="display: none;"></p>
           </div>
-          <p id="fileNameDisplay" class="file-name-display"></p>
-        </div>
-      </div>
-
-      <div class="settings-group">
-        <label for="threshold">Detection Sensitivity <span class="tooltip"
-            title="Lower values flag more text as AI. 0.5 is recommended.">ⓘ</span></label>
-        <div class="slider-container">
-          <input type="range" name="threshold" id="threshold" min="0" max="1" step="0.05" value="0.5"
-            oninput="document.getElementById('threshold-val').textContent = this.value">
-          <span class="threshold-val" id="threshold-val">0.5</span>
         </div>
       </div>
 
       <button type="submit" class="submit-btn" id="submitBtn">
         <span class="btn-text">Analyze Content</span>
-        <svg class="loader" viewBox="0 0 24 24">
-          <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="3"></circle>
+        <svg class="loader" viewBox="0 0 24 24" stroke="currentColor">
+          <circle cx="12" cy="12" r="10" fill="none" stroke-width="3" stroke-dasharray="62" stroke-dashoffset="31">
+          </circle>
         </svg>
       </button>
     </form>
-
-    <div class="footer">
-      <p>Ensure your dataset exists at <code>data/AI_Human.csv</code> to train custom models.</p>
-    </div>
   </div>
 
   <script>
@@ -90,10 +104,11 @@
       const display = document.getElementById('fileNameDisplay');
       if (input.files && input.files.length > 0) {
         display.textContent = "Selected: " + input.files[0].name;
-        display.style.opacity = 1;
+        display.style.display = 'inline-block';
+        setTimeout(() => display.style.opacity = 1, 10);
       } else {
-        display.textContent = "";
         display.style.opacity = 0;
+        setTimeout(() => display.style.display = 'none', 300);
       }
     }
 
@@ -101,6 +116,18 @@
       const btn = document.getElementById('submitBtn');
       btn.classList.add('loading');
       document.querySelector('.btn-text').textContent = "Analyzing...";
+    });
+
+    // Auto-dismiss toasts
+    document.addEventListener("DOMContentLoaded", () => {
+      setTimeout(() => {
+        document.querySelectorAll('.toast').forEach(toast => {
+          toast.style.opacity = '0';
+          toast.style.transform = 'translateY(-10px)';
+          toast.style.transition = 'all 0.3s ease';
+          setTimeout(() => toast.remove(), 300);
+        });
+      }, 5000);
     });
   </script>
 </body>

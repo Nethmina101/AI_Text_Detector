@@ -3,265 +3,48 @@
 
 <head>
   <meta charset="utf-8">
-  <title>Analysis Result</title>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bg-dark: #09090b;
-      --bg-gradient: radial-gradient(circle at top left, #1e1b4b, #09090b 40%), radial-gradient(circle at bottom right, #0f172a, #09090b 40%);
-      --glass-bg: rgba(255, 255, 255, 0.03);
-      --glass-border: rgba(255, 255, 255, 0.08);
-      --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
-
-      --ai-bg: rgba(239, 68, 68, 0.1);
-      --ai-border: rgba(239, 68, 68, 0.3);
-      --ai-text: #fca5a5;
-      --ai-highlight: rgba(239, 68, 68, 0.15);
-
-      --human-bg: rgba(16, 185, 129, 0.1);
-      --human-border: rgba(16, 185, 129, 0.3);
-      --human-text: #6ee7b7;
-
-      --accent: linear-gradient(135deg, #6d28d9, #4f46e5);
-      --accent-hover: #8b5cf6;
-      --accent-glow: rgba(139, 92, 246, 0.5);
-    }
-
-    body {
-      font-family: 'Outfit', sans-serif;
-      background-color: var(--bg-dark);
-      background-image: var(--bg-gradient);
-      background-attachment: fixed;
-      color: var(--text-main);
-      margin: 0;
-      padding: 0;
-      line-height: 1.6;
-      min-height: 100vh;
-      overflow-x: hidden;
-      position: relative;
-    }
-
-    /* Background animated orbs */
-    .background-orbs {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      z-index: -1;
-      overflow: hidden;
-      pointer-events: none;
-    }
-
-    .orb {
-      position: absolute;
-      border-radius: 50%;
-      filter: blur(80px);
-      opacity: 0.5;
-      animation: float 20s infinite ease-in-out alternate;
-    }
-
-    .orb-1 {
-      width: 400px;
-      height: 400px;
-      background: rgba(139, 92, 246, 0.3);
-      top: -100px;
-      left: -100px;
-    }
-
-    .orb-2 {
-      width: 500px;
-      height: 500px;
-      background: rgba(56, 189, 248, 0.2);
-      bottom: -200px;
-      right: -100px;
-      animation-delay: -10s;
-    }
-
-    @keyframes float {
-      0% {
-        transform: translate(0, 0) scale(1);
-      }
-
-      100% {
-        transform: translate(50px, 50px) scale(1.1);
-      }
-    }
-
-    .container {
-      max-width: 800px;
-      margin: 40px auto;
-      padding: 0 20px;
-      position: relative;
-      z-index: 10;
-    }
-
-    .header-card {
-      background: var(--glass-bg);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid var(--glass-border);
-      border-radius: 20px;
-      padding: 30px;
-      box-shadow: var(--glass-shadow);
-      margin-bottom: 24px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .header-title h2 {
-      margin: 0 0 8px 0;
-      font-size: 24px;
-      font-weight: 700;
-      background: linear-gradient(to right, #fff, #94a3b8);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .back-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      color: var(--text-main);
-      text-decoration: none;
-      font-size: 14px;
-      font-weight: 500;
-      background: rgba(255, 255, 255, 0.05);
-      padding: 0.5rem 1rem;
-      border-radius: 8px;
-      transition: all 0.2s;
-      border: 1px solid var(--glass-border);
-    }
-
-    .back-link:hover {
-      background: rgba(255, 255, 255, 0.1);
-      transform: translateX(-3px);
-    }
-
-    .score-badge {
-      background: var(--accent);
-      color: white;
-      padding: 12px 20px;
-      border-radius: 12px;
-      font-weight: 600;
-      font-size: 18px;
-      box-shadow: 0 4px 15px var(--accent-glow);
-      text-align: center;
-    }
-
-    .score-badge span {
-      font-size: 12px;
-      opacity: 0.9;
-      font-weight: 500;
-      display: block;
-      margin-bottom: 2px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .results-list {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .para {
-      padding: 24px;
-      border-radius: 16px;
-      border-left: 6px solid transparent;
-      background: var(--glass-bg);
-      backdrop-filter: blur(12px);
-      border-top: 1px solid var(--glass-border);
-      border-right: 1px solid var(--glass-border);
-      border-bottom: 1px solid var(--glass-border);
-      box-shadow: var(--glass-shadow);
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    .para:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
-    }
-
-    .para.ai {
-      border-left-color: #ef4444;
-      background: linear-gradient(90deg, var(--ai-bg) 0%, var(--glass-bg) 100%);
-    }
-
-    .para.human {
-      border-left-color: #10b981;
-      background: linear-gradient(90deg, var(--human-bg) 0%, var(--glass-bg) 100%);
-    }
-
-    .para-badge {
-      display: inline-block;
-      padding: 4px 10px;
-      border-radius: 999px;
-      font-size: 11px;
-      font-weight: 600;
-      margin-bottom: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .ai .para-badge {
-      background: var(--ai-bg);
-      color: var(--ai-text);
-      border: 1px solid var(--ai-border);
-    }
-
-    .human .para-badge {
-      background: var(--human-bg);
-      color: var(--human-text);
-      border: 1px solid var(--human-border);
-    }
-
-    .para p {
-      margin: 0;
-      font-size: 16px;
-      color: #e2e8f0;
-    }
-
-    mark {
-      background: var(--ai-highlight);
-      color: #f8fafc;
-      padding: 2px 4px;
-      border-radius: 4px;
-    }
-  </style>
+  <title>Analysis Result - AI Text Detector</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
 <body>
-  <div class="background-orbs">
-    <div class="orb orb-1"></div>
-    <div class="orb orb-2"></div>
-  </div>
+  <div class="ambient-light"></div>
 
-  <div class="container">
-    <div class="header-card">
-      <div class="header-title">
-        <h2>Document Analysis Result</h2>
-        <a href="/" class="back-link">
-          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"
-            style="margin-right: 4px;">
-            <path d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-          </svg>
-          New Analysis
-        </a>
-      </div>
-      <div class="score-badge">
-        <span>AI Generated</span>
-        {{ doc.ai_percent | round(1) }}%
+  <div class="result-container">
+    <div class="glass-container result-header-card">
+      <a href="/" class="back-link">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"
+          stroke-linecap="round" stroke-linejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        Back to App
+      </a>
+
+      <div class="gauge-wrapper">
+        <svg class="gauge-svg" viewBox="0 0 160 160">
+          <circle class="gauge-circle-bg" cx="80" cy="80" r="70"></circle>
+          <!-- 2 * pi * 70 = 439.8 -->
+          {% set dash_val = 440 %}
+          {% set is_doc_ai = doc.ai_percent >= 50 %}
+          {% set display_percent = doc.ai_percent if is_doc_ai else (100 - doc.ai_percent) %}
+          {% set offset = dash_val - (dash_val * display_percent / 100) %}
+          <circle class="gauge-circle-value {{ 'ai' if is_doc_ai else 'human' }}" cx="80" cy="80" r="70"
+            style="stroke-dashoffset: {{ offset }};"></circle>
+        </svg>
+        <div class="gauge-content">
+          <div class="gauge-percentage">{{ display_percent | round(0) | int }}%</div>
+          <div class="gauge-label">{{ 'AI Generated' if is_doc_ai else 'Human Written' }}</div>
+        </div>
       </div>
     </div>
 
     <div class="results-list">
       {% for r in paras %}
       {% set is_ai = r.prob_ensemble >= threshold %}
-      <div class="para {{ 'ai' if is_ai else 'human' }}">
+      {% set delay = loop.index0 * 0.1 %}
+      <div class="para-card {{ 'ai' if is_ai else 'human' }}" style="animation-delay: {{ delay }}s;">
         <div class="para-badge">{{ 'AI Detected' if is_ai else 'Human Written' }}</div>
 
         {% if is_ai %}
@@ -273,6 +56,19 @@
       {% endfor %}
     </div>
   </div>
+
+  <script>
+    // Trigger gauge animation
+    document.addEventListener("DOMContentLoaded", () => {
+      const circle = document.querySelector('.gauge-circle-value');
+      const offset = circle.style.strokeDashoffset;
+      circle.style.strokeDashoffset = '440'; // start empty
+
+      setTimeout(() => {
+        circle.style.strokeDashoffset = offset; // animate to fill
+      }, 100);
+    });
+  </script>
 </body>
 
 </html>
