@@ -41,17 +41,36 @@
     </div>
 
     <div class="results-list">
-      {% for r in paras %}
-      {% set is_ai = r.prob_ensemble >= threshold %}
+      {% for para in paras %}
       {% set delay = loop.index0 * 0.1 %}
-      <div class="para-card {{ 'ai' if is_ai else 'human' }}" style="animation-delay: {{ delay }}s;">
-        <div class="para-badge">{{ 'AI Detected' if is_ai else 'Human Written' }}</div>
+      {#
+      majority == 'ai' → red card, highlight human lines in GREEN
+      majority == 'human' → green card, highlight AI lines in RED
+      #}
+      <div class="para-card {{ para.majority }}" style="animation-delay: {{ delay }}s;">
 
-        {% if is_ai %}
-        <p style="white-space: pre-wrap;"><mark>{{ r.paragraph }}</mark></p>
+        {% if para.majority == 'ai' %}
+        <div class="para-badge">Mostly AI — {{ para.ai_percentage }}% AI Content</div>
         {% else %}
-        <p style="white-space: pre-wrap;">{{ r.paragraph }}</p>
+        <div class="para-badge">Mostly Human — {{ para.human_percentage }}% Human Content</div>
         {% endif %}
+
+        <p style="white-space: pre-wrap; line-height: 1.8; font-size: 1rem;">
+          {%- for line in para.lines -%}
+            {%- if not line.is_scorable -%}
+              {{- line.text -}}
+            {%- elif para.majority == 'human' and line.is_ai -%}
+              <mark class="mark-ai">{{- line.text -}}</mark>
+            {%- elif para.majority == 'ai' and not line.is_ai -%}
+              <mark class="mark-human">{{- line.text -}}</mark>
+            {%- else -%}
+              {{- line.text -}}
+            {%- endif -%}
+            {%- if not loop.last -%}
+{{- "\n" -}}
+            {%- endif -%}
+          {%- endfor -%}
+        </p>
       </div>
       {% endfor %}
     </div>

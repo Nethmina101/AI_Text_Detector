@@ -639,9 +639,18 @@ h1 {
     color: #e2e8f0;
 }
 
-mark {
-    background: rgba(239, 68, 68, 0.2);
-    color: #fff;
-    padding: 0.2rem 0;
-    border-radius: 4px;
+mark.mark-ai {
+    background: rgba(239, 68, 68, 0.25);
+    color: #fca5a5;
+    padding: 0.1rem 0;
+    border-radius: 3px;
+    border-bottom: 2px solid rgba(239, 68, 68, 0.6);
 }
+
+mark.mark-human {
+    background: rgba(16, 185, 129, 0.2);
+    color: #6ee7b7;
+    padding: 0.1rem 0;
+    border-radius: 3px;
+    border-bottom: 2px solid rgba(16, 185, 129, 0.5);
+}

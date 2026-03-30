@@ -32,6 +32,7 @@ class HybridDetector:
         ppl_cfg = joblib.load(os.path.join(MODELS_DIR, "ppl_config.pkl"))
         self.ppl = PerplexityScorer(
             model_name=ppl_cfg.get("model_name", "gpt2"))
+        print("[STEP] Loaded perplexity model (GPT-2) ✓", flush=True)
 
         # Ensemble weights tune after validation
         self.wA = 0.10
@@ -45,7 +46,8 @@ class HybridDetector:
     def _ppl_to_ai_prob(self, ppl: float) -> float:
         """Lower perplexity => more AI-like (typical assumption)."""
         ppl = float(max(1.0, min(ppl, 1000.0)))
-        z = (60.0 - ppl) / 15.0
+        # Tuned to be more aggressive for AI text (ChatGPT often gives PPL 30-80)
+        z = (80.0 - ppl) / 18.0
         return float(_sigmoid(z))
 
     def _svm_prob(self, paragraphs: List[str]) -> np.ndarray:
@@ -68,10 +70,13 @@ class HybridDetector:
         if not paragraphs:
             return []
 
+        print("[STEP] Computing TF-IDF + SVM scores...", flush=True)
         probA = self._svm_prob(paragraphs)
+        print("[STEP] TF-IDF + SVM scores computed ✓", flush=True)
         results: List[Dict] = []
 
         for i, p in enumerate(paragraphs):
+            print(f"[STEP] Scoring paragraph {i+1}/{len(paragraphs)}...", flush=True)
             xsty = self._stylometry_vec(p)
             probB = float(self.xgb.predict_proba(xsty)[:, 1][0])
 
@@ -89,18 +94,18 @@ class HybridDetector:
                 "prob_from_ppl": float(probP),
                 "prob_ensemble": float(ensemble),
             })
+            label = "AI" if ensemble >= 0.9 else "Human"
+            print(f"        → Ensemble: {ensemble:.3f} ({label})", flush=True)
 
         return results
 
     def aggregate_document(
         self, para_results: List[Dict], threshold: float = 0.9
     ) -> Dict:
-        # A threshold of 1.0 is technically impossible due to probability bounds.
-        # Clip to 0.99 so users still see flags on extremely confident AI text.
+
         effective_threshold = min(threshold, 0.99)
 
-        probs = [r["prob_ensemble"] for r in para_results]
-        if not probs:
+        if not para_results:
             return {
                 "ai_percent": 0.0,
                 "mean_prob": 0.0,
@@ -109,9 +114,24 @@ class HybridDetector:
                 "n_flagged": 0
             }
 
-        flagged = sum(1 for p in probs if p >= effective_threshold)
+        total_chars = 0
+        ai_chars = 0
+        flagged = 0
+        probs = []
+
+        for r in para_results:
+            text_len = len(r.get("paragraph", ""))
+            prob = r["prob_ensemble"]
+            probs.append(prob)
+            total_chars += text_len
+            if prob >= effective_threshold:
+                flagged += 1
+                ai_chars += text_len
+
+        ai_percent = 100.0 * ai_chars / total_chars if total_chars > 0 else 0.0
+
         return {
-            "ai_percent": 100.0 * flagged / len(probs),
+            "ai_percent": ai_percent,
             "mean_prob": float(np.mean(probs)),
             "max_prob": float(np.max(probs)),
             "n_paragraphs": len(probs),

@@ -6,6 +6,8 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+.venv311
+py310
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

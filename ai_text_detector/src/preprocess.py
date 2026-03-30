@@ -9,8 +9,8 @@ _HYPHEN_BREAK = re.compile(r"(\w)-\n(\w)")
 def split_paragraphs(text: str, min_chars: int = 5) -> List[str]:
     """
     Split the document into true paragraphs as cohesive blocks.
-    - True paragraphs (separated by \n\n) are chunked individually.
-    - Internal line breaks (e.g. line wraps inside a paragraph) are merged.
+    - True paragraphs (separated by double newlines) are individual blocks.
+    - Internal single line breaks are PRESERVED inside each block.
     """
     if not text:
         return []
@@ -18,18 +18,29 @@ def split_paragraphs(text: str, min_chars: int = 5) -> List[str]:
     # Standardize newlines
     text = text.replace("\r\n", "\n").replace("\r", "\n")
 
-    # A double-newline is almost always a new paragraph in raw PDF strings
+    # Double-newline = new paragraph
     raw_blocks = re.split(r'\n\s*\n', text)
 
     cleaned_blocks: List[str] = []
-    
     for block in raw_blocks:
-        # Keep the \n formatting exactly as it is so titles stay separated, 
-        # but just trim outer whitespace
         block = block.strip()
-        
-        # Keep everything except purely empty/tiny artifacts
         if len(block) >= min_chars:
             cleaned_blocks.append(block)
 
     return cleaned_blocks
+
+
+def split_into_lines(paragraph: str, min_chars: int = 5) -> List[str]:
+    """
+    Split a paragraph into individual lines, preserving the original
+    document line structure exactly.  Each line is a separate scorable unit.
+    Lines that are too short to score are kept as empty strings so we
+    can reconstruct the original layout when rendering.
+    """
+    if not paragraph or not paragraph.strip():
+        return []
+
+    lines = paragraph.split("\n")
+    # Return every line as-is (line.strip() is done in app.py for scoring
+    # but we keep the original text for display).
+    return lines
