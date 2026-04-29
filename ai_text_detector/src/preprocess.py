@@ -41,6 +41,4 @@ def split_into_lines(paragraph: str, min_chars: int = 5) -> List[str]:
         return []
 
     lines = paragraph.split("\n")
-    # Return every line as-is (line.strip() is done in app.py for scoring
-    # but we keep the original text for display).
     return lines

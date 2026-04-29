@@ -1,4 +1,8 @@
 import os
+os.environ["FLAGS_use_mkldnn"] = "0"
+os.environ["FLAGS_enable_pir_api"] = "0"    
+os.environ["PADDLE_USE_MKLDNN"] = "0"
+os.environ["FLAGS_new_executor_micro_batched"] = "0"
 from typing import List, Tuple, Optional
 import cv2
 import numpy as np
@@ -43,14 +47,21 @@ def _load_detector():
     global _detector
     if _detector is not None:
         return
-
     print("[STEP] Loading PaddleOCR engine...", flush=True)
+    os.environ["FLAGS_use_mkldnn"] = "0"
+    os.environ["FLAGS_enable_pir_api"] = "0"
+    os.environ["PADDLE_USE_MKLDNN"] = "0"
+
+    use_gpu = torch.cuda.is_available()
+    device  = "gpu" if use_gpu else "cpu"
+    print(f"[STEP] Loading PaddleOCR engine (device={device})...", flush=True)
+
     _detector = PaddleOCR(
         use_doc_orientation_classify=False,
         use_doc_unwarping=False,
         use_textline_orientation=False,
         lang="en",
-        device="gpu" if torch.cuda.is_available() else "cpu",
+        device=device,
         enable_mkldnn=False
     )
     print("[STEP] PaddleOCR engine loaded ✓", flush=True)
@@ -164,9 +175,7 @@ def _prepare_line_for_trocr(line_bgr: np.ndarray) -> Image.Image:
     return Image.fromarray(cv2.cvtColor(line_bgr, cv2.COLOR_BGR2RGB))
 
 
-
-# PaddleOCR-based full OCR (detection + recognition)
-# Works with PaddleOCR v3.x (predict API)
+#OCR
 
 def _paddle_ocr_full(img_bgr: np.ndarray) -> List[Tuple[str, float, np.ndarray]]:
     """
@@ -280,7 +289,7 @@ def _sort_boxes_reading_order(boxes: List[np.ndarray], y_tol: int = 20) -> List[
 
 
 
-# Recognition (TrOCR - for handwritten text fallback)
+# Recognition (TrOCR - handwritten text fallback)
 
 def _trocr_confidence(gen_out) -> float:
     if not hasattr(gen_out, "scores") or gen_out.scores is None:
@@ -353,7 +362,7 @@ def extract_text_from_image(img_bgr: np.ndarray, debug_dir: Optional[str] = None
     img_bgr = _resize_page_for_detection(img_bgr, max_side=1800)
     print("[STEP] Image preprocessed ✓", flush=True)
 
-    # ── Primary path: PaddleOCR full recognition ──
+    # PaddleOCR full recognition
     ocr_results = _paddle_ocr_full(img_bgr)
 
     # Check if PaddleOCR returned recognized text
@@ -386,7 +395,7 @@ def extract_text_from_image(img_bgr: np.ndarray, debug_dir: Optional[str] = None
             x_min = float(np.min(poly[:, 0]))
 
             if abs(y_min - last_y) > y_tol and current_line:
-                # New line — flush previous
+                # New line - flush the previous line
                 current_line.sort(key=lambda x: x[0])
                 lines.append([t for _, t in current_line])
                 current_line = []

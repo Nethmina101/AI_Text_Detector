@@ -25,7 +25,6 @@
       <div class="gauge-wrapper">
         <svg class="gauge-svg" viewBox="0 0 160 160">
           <circle class="gauge-circle-bg" cx="80" cy="80" r="70"></circle>
-          <!-- 2 * pi * 70 = 439.8 -->
           {% set dash_val = 440 %}
           {% set is_doc_ai = doc.ai_percent >= 50 %}
           {% set display_percent = doc.ai_percent if is_doc_ai else (100 - doc.ai_percent) %}
@@ -43,32 +42,28 @@
     <div class="results-list">
       {% for para in paras %}
       {% set delay = loop.index0 * 0.1 %}
-      {#
-      majority == 'ai' → red card, highlight human lines in GREEN
-      majority == 'human' → green card, highlight AI lines in RED
-      #}
       <div class="para-card {{ para.majority }}" style="animation-delay: {{ delay }}s;">
 
         {% if para.majority == 'ai' %}
-        <div class="para-badge">Mostly AI — {{ para.ai_percentage }}% AI Content</div>
+        <div class="para-badge">Mostly AI</div>
         {% else %}
-        <div class="para-badge">Mostly Human — {{ para.human_percentage }}% Human Content</div>
+        <div class="para-badge">Mostly Human</div>
         {% endif %}
 
         <p style="white-space: pre-wrap; line-height: 1.8; font-size: 1rem;">
           {%- for line in para.lines -%}
-            {%- if not line.is_scorable -%}
-              {{- line.text -}}
-            {%- elif para.majority == 'human' and line.is_ai -%}
-              <mark class="mark-ai">{{- line.text -}}</mark>
-            {%- elif para.majority == 'ai' and not line.is_ai -%}
-              <mark class="mark-human">{{- line.text -}}</mark>
-            {%- else -%}
-              {{- line.text -}}
-            {%- endif -%}
-            {%- if not loop.last -%}
-{{- "\n" -}}
-            {%- endif -%}
+          {%- if not line.is_scorable -%}
+          {{- line.text -}}
+          {%- elif para.majority == 'human' and line.is_ai -%}
+          <mark class="mark-ai">{{- line.text -}}</mark>
+          {%- elif para.majority == 'ai' and not line.is_ai -%}
+          <mark class="mark-human">{{- line.text -}}</mark>
+          {%- else -%}
+          {{- line.text -}}
+          {%- endif -%}
+          {%- if not loop.last -%}
+          {{- "\n" -}}
+          {%- endif -%}
           {%- endfor -%}
         </p>
       </div>

@@ -4,10 +4,10 @@ import os
 import sys
 import warnings
 
-# ── Force unbuffered output so steps appear immediately in terminal ──
+# Force unbuffered output so steps appear immediately in terminal 
 os.environ["PYTHONUNBUFFERED"] = "1"
 
-# ── Suppress noisy library warnings ──────────────────────────
+# Suppress noisy library warnings 
 warnings.filterwarnings("ignore", message="urllib3.*doesn't match a supported version")
 warnings.filterwarnings("ignore", message=".*loss_type=None.*")
 warnings.filterwarnings("ignore", category=DeprecationWarning)
@@ -30,7 +30,7 @@ UPLOAD_DIR = "uploads"
 
 app = Flask(__name__)
 app.config["UPLOAD_FOLDER"] = UPLOAD_DIR
-app.secret_key = "super_secret_key_for_flash_messages"
+app.secret_key = os.environ.get("FLASK_SECRET_KEY", "super_secret_key_for_flash_messages")
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 _detector: HybridDetector | None = None
@@ -100,7 +100,7 @@ def analyze():
 
         # Split into paragraphs, then score each line individually
         log(f"\n[STEP] Splitting text into paragraphs...")
-        paragraphs = split_paragraphs(text, min_chars=40)
+        paragraphs = split_paragraphs(text, min_chars=5)
         log(f"[STEP] Found {len(paragraphs)} paragraphs ✓")
 
         if not paragraphs:

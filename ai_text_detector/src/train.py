@@ -97,7 +97,7 @@ def train(train_csv: str = "data/AI_Human_Cleaned.csv"):
     joblib.dump(xgb, os.path.join(MODELS_DIR, "stylometry_xgb.pkl"))
     joblib.dump(keys, os.path.join(MODELS_DIR, "stylometry_keys.pkl"))
 
-    # Perplexity config (scorer loads GPT-2 if available; else heuristic)
+    # Load Perplexity score
     joblib.dump({"model_name": "gpt2"}, os.path.join(
         MODELS_DIR, "ppl_config.pkl"))
 
