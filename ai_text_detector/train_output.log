@@ -1,0 +1,153 @@
+2026-05-02 11:41:10 [INFO]  Training started 
+2026-05-02 11:41:10 [INFO] Loading dataset: data/AI_Human_Cleaned.csv
+2026-05-02 11:41:21 [INFO] Dataset loaded — 465233 samples (179785 AI, 285448 human)
+2026-05-02 11:41:21 [INFO] Train/test split: 372186 train, 93047 test
+2026-05-02 11:41:21 [INFO] Fitting TF-IDF (word) vectorizer …
+2026-05-02 11:44:32 [INFO] Fitting TF-IDF (char) vectorizer …
+2026-05-02 12:15:03 [INFO] Training SVM (word) …
+2026-05-02 12:15:50 [INFO] Training SVM (char) …
+2026-05-02 12:34:25 [INFO] Top words predicting AI:
+2026-05-02 12:34:25 [INFO]   your name: 1.3070
+2026-05-02 12:34:25 [INFO]   re: 1.3545
+2026-05-02 12:34:25 [INFO]   firstly: 1.4190
+2026-05-02 12:34:25 [INFO]   example if: 1.4240
+2026-05-02 12:34:25 [INFO]   it important: 1.4472
+2026-05-02 12:34:25 [INFO]   it not: 1.4488
+2026-05-02 12:34:25 [INFO]   and: 1.4597
+2026-05-02 12:34:25 [INFO]   believe that: 1.4724
+2026-05-02 12:34:25 [INFO]   significant: 1.5038
+2026-05-02 12:34:25 [INFO]   provide: 1.5069
+2026-05-02 12:34:25 [INFO]   conclusion: 1.5334
+2026-05-02 12:34:25 [INFO]   super: 1.5801
+2026-05-02 12:34:25 [INFO]   however: 1.5805
+2026-05-02 12:34:25 [INFO]   in conclusion: 1.6015
+2026-05-02 12:34:25 [INFO]   it like: 1.6137
+2026-05-02 12:34:25 [INFO]   essay: 1.6855
+2026-05-02 12:34:25 [INFO]   important to: 1.6871
+2026-05-02 12:34:25 [INFO]   potential: 1.8098
+2026-05-02 12:34:25 [INFO]   important: 1.9785
+2026-05-02 12:34:25 [INFO]   additionally: 2.0832
+2026-05-02 12:34:33 [INFO]  TF-IDF(word) + SVM AND TF-IDF(char) + SVM (avg ensemble) 
+2026-05-02 12:34:34 [INFO] TF-IDF + SVM models saved.
+2026-05-02 12:34:34 [INFO] Extracting stylometric features …
+2026-05-02 12:37:01 [INFO] Training XGBoost …
+2026-05-02 12:37:06 [INFO]  Stylometry + XGBoost 
+2026-05-02 12:37:06 [INFO] 
+              precision    recall  f1-score   support
+
+           0       0.97      0.98      0.97     57090
+           1       0.96      0.95      0.96     35957
+
+    accuracy                           0.97     93047
+   macro avg       0.97      0.96      0.96     93047
+weighted avg       0.97      0.97      0.97     93047
+2026-05-02 12:37:06 [INFO] All models saved to /models
+2026-05-02 12:37:06 [INFO]  Training complete 
+2026-05-07 19:54:51 [INFO]  Training started 
+2026-05-07 19:54:51 [INFO] Loading dataset: data/AI_Human_Cleaned.csv
+2026-05-07 19:55:00 [INFO] Dataset loaded — 465233 samples (179785 AI, 285448 human)
+2026-05-07 19:55:00 [INFO] Train/test split: 372186 train, 93047 test
+2026-05-07 19:55:01 [INFO] Overlapping samples (train ∩ test): 0
+2026-05-07 19:55:01 [INFO] Fitting TF-IDF (word) vectorizer …
+2026-05-07 19:55:33 [INFO] === Training started ===
+2026-05-07 19:55:33 [INFO] Loading dataset: data/AI_Human_Cleaned.csv
+2026-05-07 19:55:43 [INFO] Dataset loaded — 465233 samples (179785 AI, 285448 human)
+2026-05-07 19:55:43 [INFO] Train/test split: 372186 train, 93047 test
+2026-05-07 19:55:43 [INFO] Overlapping samples (train ∩ test): 0
+2026-05-07 19:55:43 [INFO] Fitting TF-IDF (word) vectorizer …
+2026-05-07 19:58:42 [INFO] Fitting TF-IDF (char) vectorizer …
+2026-05-07 19:59:04 [INFO] Fitting TF-IDF (char) vectorizer …
+2026-05-07 20:20:00 [ERROR] Training FAILED: 
+Traceback (most recent call last):
+  File "C:\Users\nethm\Desktop\Final Project Needs\New folder\ai_text_detector\ai_text_detector\src\train.py", line 165, in <module>
+    train()
+    ~~~~~^^
+  File "C:\Users\nethm\Desktop\Final Project Needs\New folder\ai_text_detector\ai_text_detector\src\train.py", line 94, in train
+    Xtr_char = char_vec.fit_transform(X_train)
+  File "C:\Users\nethm\AppData\Roaming\Python\Python314\site-packages\sklearn\feature_extraction\text.py", line 2104, in fit_transform
+    X = super().fit_transform(raw_documents)
+  File "C:\Users\nethm\AppData\Roaming\Python\Python314\site-packages\sklearn\base.py", line 1336, in wrapper
+    return fit_method(estimator, *args, **kwargs)
+  File "C:\Users\nethm\AppData\Roaming\Python\Python314\site-packages\sklearn\feature_extraction\text.py", line 1386, in fit_transform
+    vocabulary, X = self._count_vocab(raw_documents, self.fixed_vocabulary_)
+                    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\nethm\AppData\Roaming\Python\Python314\site-packages\sklearn\feature_extraction\text.py", line 1285, in _count_vocab
+    values.extend(feature_counter.values())
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+MemoryError
+2026-05-07 20:43:05 [INFO] Training SVM (word) …
+2026-05-07 20:43:47 [INFO] Training SVM (char) …
+2026-05-07 20:58:10 [INFO] === Training started ===
+2026-05-07 20:58:10 [INFO] Loading dataset: data/AI_Human_Cleaned.csv
+2026-05-07 20:58:18 [INFO] Dataset loaded — 465233 samples (179785 AI, 285448 human)
+2026-05-07 20:58:18 [INFO] Train/test split: 372186 train, 93047 test
+2026-05-07 20:58:19 [INFO] Overlapping samples (train ∩ test): 0
+2026-05-07 20:58:19 [INFO] Fitting TF-IDF (word) vectorizer …
+2026-05-07 21:01:16 [INFO] Fitting TF-IDF (char) vectorizer …
+2026-05-07 21:31:55 [INFO] Training SVM (word) …
+2026-05-07 21:32:34 [INFO] Training SVM (char) …
+
+2026-05-07 21:50:07 [INFO] === Training started ===
+2026-05-07 21:50:07 [INFO] Loading dataset: data/AI_Human_Cleaned.csv
+2026-05-07 21:50:15 [INFO] Dataset loaded — 465233 samples (179785 AI, 285448 human)
+2026-05-07 21:50:15 [INFO] Train/test split: 372186 train, 93047 test
+2026-05-07 21:50:15 [INFO] Fitting TF-IDF (word) vectorizer …
+2026-05-07 21:52:57 [INFO] Fitting TF-IDF (char) vectorizer …
+2026-05-07 22:21:09 [INFO] Training SVM (word) …
+2026-05-07 22:21:49 [INFO] Training SVM (char) …
+2026-05-07 22:27:48 [INFO] === Training started ===
+2026-05-07 22:27:48 [INFO] Loading dataset: data/AI_Human_Cleaned.csv
+2026-05-07 22:27:56 [INFO] Dataset loaded — 465233 samples (179785 AI, 285448 human)
+2026-05-07 22:27:56 [INFO] Train/test split: 372186 train, 93047 test
+2026-05-07 22:27:56 [INFO] Fitting TF-IDF (word) vectorizer …
+2026-05-07 22:30:39 [INFO] Fitting TF-IDF (char) vectorizer …
+2026-05-07 22:58:49 [INFO] Training SVM (word) …
+2026-05-07 22:59:29 [INFO] Training SVM (char) …
+2026-05-07 23:14:38 [INFO] Top words predicting AI:
+2026-05-07 23:14:38 [INFO]   your name: 1.3070
+2026-05-07 23:14:38 [INFO]   re: 1.3545
+2026-05-07 23:14:38 [INFO]   firstly: 1.4190
+2026-05-07 23:14:38 [INFO]   example if: 1.4240
+2026-05-07 23:14:38 [INFO]   it important: 1.4472
+2026-05-07 23:14:38 [INFO]   it not: 1.4488
+2026-05-07 23:14:38 [INFO]   and: 1.4597
+2026-05-07 23:14:38 [INFO]   believe that: 1.4724
+2026-05-07 23:14:38 [INFO]   significant: 1.5038
+2026-05-07 23:14:38 [INFO]   provide: 1.5069
+2026-05-07 23:14:38 [INFO]   conclusion: 1.5334
+2026-05-07 23:14:38 [INFO]   super: 1.5801
+2026-05-07 23:14:38 [INFO]   however: 1.5805
+2026-05-07 23:14:38 [INFO]   in conclusion: 1.6015
+2026-05-07 23:14:38 [INFO]   it like: 1.6137
+2026-05-07 23:14:38 [INFO]   essay: 1.6855
+2026-05-07 23:14:38 [INFO]   important to: 1.6871
+2026-05-07 23:14:38 [INFO]   potential: 1.8098
+2026-05-07 23:14:38 [INFO]   important: 1.9785
+2026-05-07 23:14:38 [INFO]   additionally: 2.0832
+2026-05-07 23:14:46 [INFO] TF-IDF(word) + SVM AND TF-IDF(char) + SVM (avg ensemble)
+2026-05-07 23:14:46 [INFO] 
+              precision    recall  f1-score   support
+
+           0       1.00      1.00      1.00     57090
+           1       1.00      1.00      1.00     35957
+
+    accuracy                           1.00     93047
+   macro avg       1.00      1.00      1.00     93047
+weighted avg       1.00      1.00      1.00     93047
+
+2026-05-07 23:14:47 [INFO] TF-IDF + SVM models saved.
+2026-05-07 23:14:47 [INFO] Extracting stylometric features …
+2026-05-07 23:17:25 [INFO] Training XGBoost …
+2026-05-07 23:17:31 [INFO]  Stylometry + XGBoost 
+2026-05-07 23:17:31 [INFO] 
+              precision    recall  f1-score   support
+
+           0       0.97      0.98      0.97     57090
+           1       0.96      0.95      0.96     35957
+
+    accuracy                           0.97     93047
+   macro avg       0.97      0.96      0.96     93047
+weighted avg       0.97      0.97      0.97     93047
+
+2026-05-07 23:17:31 [INFO] All models saved to /models
+2026-05-07 23:17:31 [INFO] === Training complete ===

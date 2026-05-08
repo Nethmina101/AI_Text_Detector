@@ -21,6 +21,7 @@ This project requires **Poppler** for PDF OCR processing.
 ```bash
 python -m venv .venv
 # Windows: .venv\Scripts\activate
+#.venv311/Scripts/Activate.ps1
 source .venv/bin/activate
 
 pip install -r requirements.txt

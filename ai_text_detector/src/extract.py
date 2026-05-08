@@ -24,7 +24,7 @@ def _extract_pdf_text_pdfplumber(file_path: str) -> str:
             pages_text.append(t)
 
     # Preserve page boundaries (helps avoid paragraph merging across pages)
-    return "\n\n=== PAGE BREAK ===\n\n".join(pages_text)
+    return "\n\n".join(pages_text)
 
 
 def extract_text(file_path: str) -> Tuple[str, str]:

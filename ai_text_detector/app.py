@@ -56,7 +56,7 @@ def analyze():
         _detector = HybridDetector()
         log("[STEP] All models loaded ✓")
 
-    # Default threshold tuned for hybrid ensemble
+    # Default threshold
     threshold = 0.75
 
     # checking pasted text first
@@ -108,7 +108,7 @@ def analyze():
             return redirect(url_for("index"))
 
         # Build flat list of scorable lines, tracking which paragraph each belongs to
-        para_line_map = []   # (para_idx, line_idx_in_para, is_scorable)
+        para_line_map = []   
         all_scorable_lines = []
         para_line_lists = []  # per-paragraph line records (including unscorable)
 

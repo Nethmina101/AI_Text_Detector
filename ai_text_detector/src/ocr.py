@@ -350,8 +350,8 @@ def _recognize_crop_with_trocr(crop_bgr: np.ndarray) -> Tuple[str, float]:
     return text, conf
 
 
-# Page OCR — Primary path: PaddleOCR full (detect+recognize)
-#             Fallback: PaddleOCR detect → TrOCR recognize
+# Page OCR - Primary path: PaddleOCR full (detect+recognize)
+#            Fallback: PaddleOCR detect → TrOCR recognize
 
 def extract_text_from_image(img_bgr: np.ndarray, debug_dir: Optional[str] = None) -> str:
     if debug_dir:
@@ -418,7 +418,7 @@ def extract_text_from_image(img_bgr: np.ndarray, debug_dir: Optional[str] = None
                 print(f"        ... and {len(recognized_lines) - 5} more lines", flush=True)
             return "\n".join(recognized_lines)
 
-    # ── Fallback: PaddleOCR detect → TrOCR recognize (handwritten) ──
+    #  Fallback: PaddleOCR detect → TrOCR recognize (handwritten)
     print("[STEP] PaddleOCR recognition yielded no text", flush=True)
     print("[STEP] Falling back to TrOCR (handwritten text mode)...", flush=True)
 
@@ -499,7 +499,7 @@ def extract_ocr_from_pdf(file_path: str, poppler_path: Optional[str] = None, deb
             print(f"[WARN] OCR failed on page {i + 1}: {e}", flush=True)
             full_text.append("")
 
-    return "\n\n=== PAGE BREAK ===\n\n".join(full_text)
+    return "\n\n".join(full_text)
 
 
 # Single image OCR helper
