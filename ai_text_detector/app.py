@@ -6,6 +6,13 @@ import warnings
 
 # Force unbuffered output so steps appear immediately in terminal 
 os.environ["PYTHONUNBUFFERED"] = "1"
+os.environ["PYTHONIOENCODING"] = "utf-8"
+
+# Fix Windows console encoding so Unicode chars (✓, →) 
+if sys.stdout and hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if sys.stderr and hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 
 # Suppress noisy library warnings 
 warnings.filterwarnings("ignore", message="urllib3.*doesn't match a supported version")
@@ -51,10 +58,10 @@ def analyze():
     global _detector
     if _detector is None:
         log("\n" + "="*50)
-        log("[STEP] Initializing AI detection models...")
+        log("Initializing AI detection models...")
         log("="*50)
         _detector = HybridDetector()
-        log("[STEP] All models loaded ✓")
+        log("All models loaded")
 
     # Default threshold
     threshold = 0.75
@@ -66,9 +73,9 @@ def analyze():
     try:
         if pasted_text:
             log("\n" + "="*50)
-            log("[STEP] Analyzing pasted text input")
+            log("Analyzing pasted text input")
             log("="*50)
-            log(f"[STEP] Text length: {len(pasted_text)} characters")
+            log(f"Text length: {len(pasted_text)} characters")
             text = pasted_text
         else:
             # if not check file upload
@@ -88,7 +95,7 @@ def analyze():
             f.save(path)
 
             log(f"\n{'='*50}")
-            log(f"[STEP] Processing uploaded file: {filename}")
+            log(f"Processing uploaded file: {filename}")
             log(f"{'='*50}")
 
             text, _ = extract_text(path)
@@ -99,9 +106,9 @@ def analyze():
             return redirect(url_for("index"))
 
         # Split into paragraphs, then score each line individually
-        log(f"\n[STEP] Splitting text into paragraphs...")
+        log(f"\nSplitting text into paragraphs...")
         paragraphs = split_paragraphs(text, min_chars=5)
-        log(f"[STEP] Found {len(paragraphs)} paragraphs ✓")
+        log(f"Found {len(paragraphs)} paragraphs ")
 
         if not paragraphs:
             flash("No substantial text paragraphs found to analyze.", "error")
@@ -126,8 +133,8 @@ def analyze():
                     line_records.append({"text": line, "is_scorable": False, "is_ai": False, "prob": 0.0})
             para_line_lists.append(line_records)
 
-        log(f"[STEP] Total lines to score: {len(all_scorable_lines)}")
-        log(f"[STEP] Running AI detection on {len(all_scorable_lines)} lines...")
+        log(f"Total lines to score: {len(all_scorable_lines)}")
+        log(f"Running AI detection on {len(all_scorable_lines)} lines...")
         line_results = _detector.score_paragraphs(all_scorable_lines)
 
         # Write scores back into the line records
@@ -169,10 +176,10 @@ def analyze():
         doc = _detector.aggregate_document(line_results, threshold=threshold)
 
         log(f"\n{'='*50}")
-        log(f"[RESULT] Analysis complete!")
-        log(f"[RESULT] AI-generated lines: {doc['n_flagged']}/{doc['n_paragraphs']}")
-        log(f"[RESULT] AI-flagged %: {doc['ai_percent']:.1f}%")
-        log(f"[RESULT] Mean probability: {doc['mean_prob']:.3f}")
+        log(f"Analysis complete!!!")
+        log(f"AI-generated lines: {doc['n_flagged']}/{doc['n_paragraphs']}")
+        log(f"AI-flagged %: {doc['ai_percent']:.1f}%")
+        log(f"Mean probability: {doc['mean_prob']:.3f}")
         log(f"{'='*50}\n")
 
         return render_template(

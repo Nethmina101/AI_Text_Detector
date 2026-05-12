@@ -5,12 +5,36 @@ from typing import List
 
 _HYPHEN_BREAK = re.compile(r"(\w)-\n(\w)")
 
+# Sentence-ending punctuation followed by optional quote/bracket
+_SENT_END = re.compile(r'[.!?]["\')\]]?\s*$')
+
+
+def _rejoin_soft_breaks(block: str) -> str:
+    if not block:
+        return block
+
+    # fix hyphenated breaks: "word-\nbreak" → "wordbreak"
+    block = _HYPHEN_BREAK.sub(r"\1\2", block)
+
+    lines = block.split("\n")
+    if len(lines) <= 1:
+        return block
+
+    joined_parts: List[str] = []
+    for line in lines:
+        stripped = line.strip()
+        if not stripped: 
+            continue
+        joined_parts.append(stripped)
+
+    return " ".join(joined_parts)
+
 
 def split_paragraphs(text: str, min_chars: int = 5) -> List[str]:
     """
     Split the document into true paragraphs as cohesive blocks.
     - True paragraphs (separated by double newlines) are individual blocks.
-    - Internal single line breaks are PRESERVED inside each block.
+    - Internal single line breaks are REJOINED (they are visual PDF wrapping).
     """
     if not text:
         return []
@@ -25,6 +49,8 @@ def split_paragraphs(text: str, min_chars: int = 5) -> List[str]:
     for block in raw_blocks:
         block = block.strip()
         if len(block) >= min_chars:
+            # Rejoin soft line breaks within the paragraph PDF-extracted text matches the structure of pasted text
+            block = _rejoin_soft_breaks(block)
             cleaned_blocks.append(block)
 
     return cleaned_blocks

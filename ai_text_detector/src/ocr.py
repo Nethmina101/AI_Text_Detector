@@ -40,21 +40,21 @@ def _load_trocr():
         except Exception:
             pass
 
-    print(f"[STEP] TrOCR loaded on {_device}", flush=True)
+    print(f"TrOCR loaded on {_device}", flush=True)
 
 
 def _load_detector():
     global _detector
     if _detector is not None:
         return
-    print("[STEP] Loading PaddleOCR engine...", flush=True)
+    print("Loading PaddleOCR engine...", flush=True)
     os.environ["FLAGS_use_mkldnn"] = "0"
     os.environ["FLAGS_enable_pir_api"] = "0"
     os.environ["PADDLE_USE_MKLDNN"] = "0"
 
     use_gpu = torch.cuda.is_available()
     device  = "gpu" if use_gpu else "cpu"
-    print(f"[STEP] Loading PaddleOCR engine (device={device})...", flush=True)
+    print(f"Loading PaddleOCR engine (device={device})...", flush=True)
 
     _detector = PaddleOCR(
         use_doc_orientation_classify=False,
@@ -64,7 +64,7 @@ def _load_detector():
         device=device,
         enable_mkldnn=False
     )
-    print("[STEP] PaddleOCR engine loaded ✓", flush=True)
+    print("PaddleOCR engine loaded ", flush=True)
 
 
 # Image helpers
@@ -73,7 +73,7 @@ def _clahe_gray(gray: np.ndarray) -> np.ndarray:
     return clahe.apply(gray)
 
 
-def _deskew_bgr(img_bgr: np.ndarray) -> np.ndarray:
+def _deskew_bgr(img_bgr: np.ndarray) -> np.ndarray: 
     gray = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)
     gray = _clahe_gray(gray)
     thr = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
@@ -183,14 +183,14 @@ def _paddle_ocr_full(img_bgr: np.ndarray) -> List[Tuple[str, float, np.ndarray]]
     Returns list of (text, confidence, polygon) tuples.
     """
     _load_detector()
-    print("[STEP] Running PaddleOCR detection + recognition...", flush=True)
+    print("Running PaddleOCR detection + recognition...", flush=True)
 
     rgb = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
 
     try:
         result = list(_detector.predict(rgb))
     except Exception as e:
-        print(f"[WARN] PaddleOCR predict failed: {e}", flush=True)
+        print(f"PaddleOCR predict failed!!!: {e}", flush=True)
         return []
 
     items: List[Tuple[str, float, np.ndarray]] = []
@@ -216,7 +216,7 @@ def _paddle_ocr_full(img_bgr: np.ndarray) -> List[Tuple[str, float, np.ndarray]]
 
         n_polys = len(dt_polys) if dt_polys is not None else 0
         n_texts = len(rec_texts) if rec_texts is not None else 0
-        print(f"[STEP] PaddleOCR found {n_polys} text regions, {n_texts} recognized texts", flush=True)
+        print(f"PaddleOCR found {n_polys} text regions, {n_texts} recognized texts", flush=True)
 
         # If we got both boxes and texts, pair them up
         if dt_polys is not None and rec_texts is not None:
@@ -349,18 +349,15 @@ def _recognize_crop_with_trocr(crop_bgr: np.ndarray) -> Tuple[str, float]:
     conf = _trocr_confidence(gen_out)
     return text, conf
 
-
-# Page OCR - Primary path: PaddleOCR full (detect+recognize)
-#            Fallback: PaddleOCR detect → TrOCR recognize
-
+#OCR pipeline
 def extract_text_from_image(img_bgr: np.ndarray, debug_dir: Optional[str] = None) -> str:
     if debug_dir:
         os.makedirs(debug_dir, exist_ok=True)
 
-    print("[STEP] Preprocessing image (deskew + resize)...", flush=True)
+    print("Preprocessing image...", flush=True)
     img_bgr = _deskew_bgr(img_bgr)
     img_bgr = _resize_page_for_detection(img_bgr, max_side=1800)
-    print("[STEP] Image preprocessed ✓", flush=True)
+    print("Image preprocessed", flush=True)
 
     # PaddleOCR full recognition
     ocr_results = _paddle_ocr_full(img_bgr)
@@ -373,8 +370,8 @@ def extract_text_from_image(img_bgr: np.ndarray, debug_dir: Optional[str] = None
     ]
 
     if texts_with_scores:
-        print(f"[STEP] PaddleOCR recognized {len(texts_with_scores)} text segments ✓", flush=True)
-        print("[STEP] Sorting text in reading order (top→bottom, left→right)...", flush=True)
+        print(f"PaddleOCR recognized {len(texts_with_scores)} text segments", flush=True)
+        print("Sorting text in reading order (top→bottom, left→right)...", flush=True)
         # Sort by reading order (top-to-bottom, left-to-right)
         sorted_results = sorted(
             texts_with_scores,
@@ -410,7 +407,7 @@ def extract_text_from_image(img_bgr: np.ndarray, debug_dir: Optional[str] = None
         recognized_lines = [" ".join(parts) for parts in lines]
 
         if recognized_lines:
-            print(f"[STEP] Assembled {len(recognized_lines)} text lines ✓", flush=True)
+            print(f"Assembled {len(recognized_lines)} text lines ", flush=True)
             for j, ln in enumerate(recognized_lines[:5], 1):
                 preview = ln[:80] + "..." if len(ln) > 80 else ln
                 print(f"        Line {j}: {preview}", flush=True)
@@ -419,8 +416,8 @@ def extract_text_from_image(img_bgr: np.ndarray, debug_dir: Optional[str] = None
             return "\n".join(recognized_lines)
 
     #  Fallback: PaddleOCR detect → TrOCR recognize (handwritten)
-    print("[STEP] PaddleOCR recognition yielded no text", flush=True)
-    print("[STEP] Falling back to TrOCR (handwritten text mode)...", flush=True)
+    print("PaddleOCR recognition yielded no text", flush=True)
+    print("Falling back to TrOCR...", flush=True)
 
     boxes = [poly for _, _, poly in ocr_results if poly.shape[0] >= 4]
     if not boxes:
@@ -429,7 +426,7 @@ def extract_text_from_image(img_bgr: np.ndarray, debug_dir: Optional[str] = None
     boxes = _filter_boxes(boxes)
     boxes = _sort_boxes_reading_order(boxes)
 
-    print(f"[STEP] Processing {len(boxes)} text regions with TrOCR...", flush=True)
+    print(f"Processing {len(boxes)} text regions with TrOCR...", flush=True)
     recognized_lines: List[str] = []
 
     for i, box in enumerate(boxes):
@@ -448,7 +445,7 @@ def extract_text_from_image(img_bgr: np.ndarray, debug_dir: Optional[str] = None
             if debug_dir:
                 cv2.imwrite(os.path.join(debug_dir, f"crop_{i:03d}.png"), crop)
 
-            print(f"[STEP] TrOCR recognizing region {i+1}/{len(boxes)}...", flush=True)
+            print(f"TrOCR recognizing region {i+1}/{len(boxes)}...", flush=True)
             text, conf = _recognize_crop_with_trocr(crop)
 
             text_len = len(text.strip())
@@ -461,7 +458,7 @@ def extract_text_from_image(img_bgr: np.ndarray, debug_dir: Optional[str] = None
 
             recognized_lines.append(text)
         except Exception as e:
-            print(f"[WARN] TrOCR failed on crop {i}: {e}", flush=True)
+            print(f"TrOCR failed on crop!! {i}: {e}", flush=True)
             continue
 
     return "\n".join(recognized_lines)
@@ -484,7 +481,7 @@ def extract_ocr_from_pdf(file_path: str, poppler_path: Optional[str] = None, deb
 
     for i, img_pil in enumerate(images):
         print(f"\n{'='*50}", flush=True)
-        print(f"[STEP] Running OCR on page {i + 1}/{len(images)}", flush=True)
+        print(f"Running OCR on page {i + 1}/{len(images)}", flush=True)
         print(f"{'='*50}", flush=True)
         img_bgr = cv2.cvtColor(np.array(img_pil), cv2.COLOR_RGB2BGR)
 

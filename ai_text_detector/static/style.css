@@ -4,7 +4,7 @@
     --bg-dark: #030305;
     --bg-gradient: radial-gradient(80% 80% at 50% -20%, rgba(120, 60, 255, 0.15), transparent 100%),
         radial-gradient(60% 60% at 100% 100%, rgba(56, 189, 248, 0.1), transparent 100%);
-    --glass-bg: rgba(255, 255, 255, 0.02);
+    --glass-bg: #ffffff05;
     --glass-border: rgba(255, 255, 255, 0.06);
     --glass-shadow: 0 30px 60px -10px rgba(0, 0, 0, 0.5);
     --text-primary: #ededed;
@@ -132,6 +132,14 @@ body {
     width: 28px;
     height: 28px;
     color: var(--text-primary);
+}
+
+.logo-icon .custom-logo {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    border-radius: 8px;
+    z-index: 1;
 }
 
 h1 {
@@ -326,7 +334,7 @@ h1 {
     height: 40px;
     color: var(--text-secondary);
     margin-bottom: 1.25rem;
-    transition: transform 0.3s ease, color 0.3s ease;
+    transition: transform 0.3s ease, 0.3s ease;
 }
 
 .file-upload-border:hover .upload-icon {
@@ -653,4 +661,4 @@ mark.mark-human {
     padding: 0.1rem 0;
     border-radius: 3px;
     border-bottom: 2px solid rgba(16, 185, 129, 0.5);
-}
+}

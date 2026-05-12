@@ -48,7 +48,7 @@ def _setup_logger() -> logging.Logger:
 
 def train(train_csv: str = "data/AI_Human_Cleaned.csv"):
     log = _setup_logger()
-    log.info("=== Training started ===")
+    log.info("--- Training started ---")
     os.makedirs(MODELS_DIR, exist_ok=True)
 
     # Load data
@@ -152,7 +152,7 @@ def train(train_csv: str = "data/AI_Human_Cleaned.csv"):
         MODELS_DIR, "ppl_config.pkl"))
 
     log.info("All models saved to /%s", MODELS_DIR)
-    log.info("=== Training complete ===")
+    log.info("--- Training complete ---")
 
 
 if __name__ == "__main__":

@@ -32,7 +32,7 @@ class HybridDetector:
         ppl_cfg = joblib.load(os.path.join(MODELS_DIR, "ppl_config.pkl"))
         self.ppl = PerplexityScorer(
             model_name=ppl_cfg.get("model_name", "gpt2"))
-        print("[STEP] Loaded perplexity model (GPT-2) ✓", flush=True)
+        print("Loaded perplexity model (GPT-2) !", flush=True)
 
         # Ensemble weights tune after validation
         self.wA = 0.10
@@ -52,10 +52,6 @@ class HybridDetector:
 
     def _svm_prob(self, paragraphs: List[str]) -> np.ndarray:
         """
-        Compute TF-IDF-based probability as the average of:
-        - word TF-IDF SVM prob
-        - char TF-IDF SVM prob
-
         This avoids hstack() and prevents huge RAM usage.
         """
         Xw = self.word_vec.transform(paragraphs)
@@ -70,13 +66,13 @@ class HybridDetector:
         if not paragraphs:
             return []
 
-        print("[STEP] Computing TF-IDF + SVM scores...", flush=True)
+        print("Computing TF-IDF + SVM scores...", flush=True)
         probA = self._svm_prob(paragraphs)
-        print("[STEP] TF-IDF + SVM scores computed ✓", flush=True)
+        print("TF-IDF + SVM scores computed", flush=True)
         results: List[Dict] = []
 
         for i, p in enumerate(paragraphs):
-            print(f"[STEP] Scoring paragraph {i+1}/{len(paragraphs)}...", flush=True)
+            print(f"Scoring paragraph {i+1}/{len(paragraphs)}...", flush=True)
             xsty = self._stylometry_vec(p)
             probB = float(self.xgb.predict_proba(xsty)[:, 1][0])
 
