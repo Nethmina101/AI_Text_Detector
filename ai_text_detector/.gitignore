@@ -20,13 +20,12 @@ __pycache__/
 # Project specific
 poppler/
 uploads/
-data/
 
 # Jupyter Notebook
 .ipynb_checkpoints
 models/
 
-# Generated Logs and Reports
+# Logs and Reports
 clean_log.txt
 interim_task.md
 Interim_Report_Full.md

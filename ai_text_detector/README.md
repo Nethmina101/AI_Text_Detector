@@ -28,8 +28,8 @@ pip install -r requirements.txt
 ```
 
 ## Dataset
-
-Place your dataset at: `data/train.csv`
+Get the dataset from this link = [text](https://www.kaggle.com/datasets/shanegerami/ai-vs-human-text)
+Place your dataset at: 'data/'
 
 It must contain columns:
 - `text` (string)
