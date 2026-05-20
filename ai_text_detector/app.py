@@ -34,6 +34,7 @@ def log(msg: str):
 
 
 UPLOAD_DIR = "uploads"
+MAX_WORDS = 50000  # Word limit
 
 app = Flask(__name__)
 app.config["UPLOAD_FOLDER"] = UPLOAD_DIR
@@ -103,6 +104,12 @@ def analyze():
         if not text or not text.strip():
             flash("Could not extract any text from the uploaded file. "
                   "The file may be empty or unreadable.", "error")
+            return redirect(url_for("index"))
+
+        # Check word limit
+        word_count = len(text.split())
+        if word_count > MAX_WORDS:
+            flash(f"Text exceeds the maximum word limit of {MAX_WORDS} words (Current word count: {word_count}). Please reduce the text and try again.", "error")
             return redirect(url_for("index"))
 
         # Split into paragraphs, then score each line individually

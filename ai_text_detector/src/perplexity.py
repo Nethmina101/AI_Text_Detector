@@ -14,7 +14,7 @@ def _heuristic_ppl(text: str) -> float:
     ttr = unique / len(words)
     return 200.0 - 180.0 * min(max(ttr, 0.0), 1.0)
 
-
+#import GPT-2 
 class PerplexityScorer:
     """Uses GPT-2 if transformers/torch are available; otherwise heuristic."""
 
